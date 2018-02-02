@@ -11,6 +11,7 @@ contract LibrInfo {
     string ISBN;
     string titel;
     string auteur;
+    bytes32 lener;
   }
 
   address public eigenaar;
@@ -41,6 +42,16 @@ contract LibrInfo {
 
   function BoekToevoegen(bytes32 nummer, bytes32 code, string ISBN, string titel, string auteur) public{
     require (personen[keccak256(nummer, code)].magBoekToevoegen);
-    boekenlijst.push(Boek({ISBN: ISBN, titel: titel, auteur: auteur}));
+    boekenlijst.push(Boek({ISBN: ISBN, titel: titel, auteur: auteur, lener: ""}));
+  }
+
+  function BoekLenen(bytes32 nummer, bytes32 code, uint boek) public{
+    require(personen[keccak256(nummer, code)].magBoekLenen && boekenlijst[boek].lener == "");
+    boekenlijst[boek].lener = keccak256(nummer, code);
+  }
+
+  function BoekInleveren(bytes32 nummer, bytes32 code, uint boek) public{
+    require(boekenlijst[boek].lener == keccak256(nummer, code));
+    boekenlijst[boek].lener = "";
   }
 }
